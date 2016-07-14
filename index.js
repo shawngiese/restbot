@@ -100,7 +100,7 @@ controller.hears(['open analytic studio', 'open studio'], ['direct_message', 'di
 //list of commands
 controller.hears('help', ['direct_message', 'direct_mention'], function (bot, message) {
     var help = 'I can answer the following requests: \n' +
-        '`open crosstabs` create a link to Interactive Crosstabs. Please refresh the link once in browser to log in. \n' +
+        '`open crosstabs` create a link to Interactive Crosstabs.\n' +
         '`open studio` create a link to Analytic Studio.\n' +
         '`sales chart` see today\'s country sales.\n' +
         '`sales report` see today\'s sales report.\n' +
@@ -313,7 +313,7 @@ controller.hears(['open crosstab', 'crosstab', 'make crosstab'], ['direct_messag
             convo.say({
                 "attachments": [
                     {
-                        "text": "Click <" + urlPath + "|here> to open " + fileChoices[choice] + " with Interactive Crosstabs."
+                        "text": "Click <" + urlPath + "|here> to open " + fileChoices[choice] + " with Interactive Crosstabs. \nPlease refresh the link once in browser to log in. "
                     }
                 ]
             })
