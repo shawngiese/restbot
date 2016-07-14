@@ -100,7 +100,7 @@ controller.hears(['open analytic studio', 'open studio'], ['direct_message', 'di
 //list of commands
 controller.hears('help', ['direct_message', 'direct_mention'], function (bot, message) {
     var help = 'I can answer the following requests: \n' +
-        '`open crosstabs` create a link to Interactive Crosstabs.\n' +
+        '`open crosstabs` create a link to Interactive Crosstabs.\n Please refresh the link once in browser to log in. \n' +
         '`open studio` create a link to Analytic Studio.\n' +
         '`sales chart` see today\'s country sales.\n' +
         '`sales report` see today\'s sales report.\n' +
