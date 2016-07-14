@@ -1,6 +1,6 @@
 {
   "name": "restbot",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Beep Boop Node.js Slackbot for OpenText iHub servers",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,6 @@
     "beepboop-botkit": "^1.4.1",
     "botkit": "^0.2.2",
     "request": "~2.72.0",
-    "cheerio": "^0.20.0",
-    "form-data": "^1.0.0-rc4"
+    "cheerio": "^0.20.0"
   }
 }

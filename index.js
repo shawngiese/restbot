@@ -19,7 +19,6 @@ rptdocument files contain finished reports with queried data, images and charts.
 Due to the demonstrtive purposes of this code, error checking is minimimal.
 Possible code evolution:
  * check if there is an existing log-in authentication before making a new one
- * upload content to Slack instead of just generating URLs
  * enable user authentication
  * consider points to send notifications from iHub server to Slack channel
  * support report parameters in conversation
@@ -105,8 +104,8 @@ controller.hears('help', ['direct_message', 'direct_mention'], function (bot, me
         '`open studio` create a link to Analytic Studio.\n' +
         '`sales chart` see today\'s country sales.\n' +
         '`sales report` see today\'s sales report.\n' +
-        '`share pdf` loads a PDF file to share.\n' +
-        '`share spreadsheet` loads an Excel file to share.\n' +
+        '`share pdf` generates a PDF file to share.\n' +
+        '`share spreadsheet` generates an Excel file to share.\n' +
         '`show data` see available data files.\n' +
         '`show files` see files in your home folder.\n' +
         '`top sales` see today\'s top sales agents.\n' 
@@ -134,6 +133,7 @@ controller.hears(['data', 'show data'], ['direct_message', 'direct_mention'], fu
     })
 })
 
+//Retrieves XLSX file from an rptdocument file
 controller.hears(['send spreadsheet', 'share spreadsheet'], ['direct_message', 'direct_mention'], function (bot, message) {
     login(function (myauthtoken) {
         downloadFile(myauthtoken, '500723000100','xlsx', function (answer) {
@@ -153,6 +153,7 @@ controller.hears(['send spreadsheet', 'share spreadsheet'], ['direct_message', '
                             filename: 'file.xlsx'
                         })
                     form.append('channels', message.channel)
+             //Difficulty with botkit api so make a file upload using normal POST... above
              /*           
              bot.api.files.upload({
                     //file: fs.createReadStream("file.xlsx"),
@@ -172,25 +173,26 @@ controller.hears(['send spreadsheet', 'share spreadsheet'], ['direct_message', '
         })
     })
 })
-
+//Retrieves PDF file from an rptdocument file
 controller.hears(['send pdf', 'share pdf'], ['direct_message', 'direct_mention'], function (bot, message) {
     login(function (myauthtoken) {
-        downloadFile(myauthtoken, '500723000100','pdf', function (answer) {
+        downloadFile(myauthtoken, '500723000100', 'pdf', function (answer) {
             var randomNum = Math.ceil(Math.random() * 9999)
-            //fs.writeFile("file"+randomNum+".xlsx",answer)
+                //fs.writeFile("file"+randomNum+".xlsx",answer)
             console.log('Sending response to Slack')
-                 var r = request.post('https://slack.com/api/files.upload', function (err, res, body) {
+            var r = request.post('https://slack.com/api/files.upload', function (err, res, body) {
 
-                })
-                    var form = r.form()
-                    form.append('token', token)
-                    form.append('title', 'Sales data Q1')
-                    form.append('filename', 'file'+randomNum+'.pdf')
-                    //form.append('file', fs.createReadStream("file.xlsx"))
-                    form.append('file', answer,{
-                            filename: 'file.xlsx'
-                        })
-                    form.append('channels', message.channel)
+            })
+            //This can be modified until the request is fired on the next cycle of the event-loop
+            var form = r.form()
+            form.append('token', token)
+            form.append('title', 'Sales data Q1')
+            form.append('filename', 'file' + randomNum + '.pdf')
+                //form.append('file', fs.createReadStream("file.xlsx"))
+            form.append('file', answer, {
+                filename: 'file.xlsx'
+            })
+            form.append('channels', message.channel)
         })
     })
 })
@@ -534,7 +536,7 @@ function downloadFile(myauthtoken, fileid, format, callback) {
         'User-Agent': 'bottalk/0.0.1'
     }
 
-    // Configure the request
+    // Configure the request, encoding set to null to capture the return file in raw format
     var options = {
         url: 'http://restapitest.actuate.com:5000/ihub/v1/visuals/'+fileid+'/'+format,
         method: 'GET',
@@ -560,6 +562,7 @@ function downloadFile(myauthtoken, fileid, format, callback) {
     })
 }
 
+//not used right now
 function upFile(file) {
     // Set the headers
     var headers = {
