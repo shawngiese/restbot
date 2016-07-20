@@ -57,13 +57,14 @@ controller.on('bot_channel_join', function (bot, message) {
     bot.reply(message, "I\'m here!")
 })
 
-controller.hears(['hello', 'hi'], ['direct_message'], function (bot, message) {
+/* controller.hears(['hello', 'hi'], ['direct_message'], function (bot, message) {
     bot.reply(message, 'Hello <@' + message.user + '>.')
     bot.reply(message, 'It\'s nice to talk to you directly.')
 })
+*/
 
 controller.hears('.*', ['mention'], function (bot, message) {
-    bot.reply(message, 'I\'m listening.')
+    bot.reply(message, 'I hear you.')
 })
 
 controller.hears(['who is opentext', 'what is opentext'], ['direct_message', 'direct_mention'], function (bot, message) {
@@ -100,15 +101,15 @@ controller.hears(['open analytic studio', 'open studio'], ['direct_message', 'di
 //list of commands
 controller.hears('help', ['direct_message', 'direct_mention'], function (bot, message) {
     var help = 'I can answer the following requests: \n' +
-        '`open crosstabs` create a link to Interactive Crosstabs.\n' +
+        '`open crosstabs` select a data file to open in Interactive Crosstabs.\n' +
         '`open studio` create a link to Analytic Studio.\n' +
-        '`sales chart` see today\'s country sales.\n' +
-        '`sales report` see today\'s sales report.\n' +
-        '`share pdf` generates a PDF file to share.\n' +
-        '`share spreadsheet` generates an Excel file to share.\n' +
+        '`sales chart` generate chart of today\'s sales.\n' +
+        '`sales report` create link to today\'s sales report.\n' +
+        '`share pdf` generate and upload a PDF.\n' +
+        '`share spreadsheet` generate and upload an Excel file.\n' +
         '`show data` see available data files.\n' +
         '`show files` see files in your home folder.\n' +
-        '`top sales` see today\'s top sales agents.\n' 
+        '`top sales` display today\'s top sales agents.\n' 
         bot.reply(message, help)
 })
 
