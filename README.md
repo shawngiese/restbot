@@ -21,25 +21,26 @@ Running the chatbot locally, from your laptop, is very useful for debugging. All
 
 4. Start the chatbot.
 
-  * Mac OS X or Linux
-```
-	SLACK_TOKEN=<YOUR_SLACK_TOKEN> npm start
-```    
-  * Windows 
+Windows 
 
     1. Replace the following line in index.js. Your token should be within quotation marks.
-```    
+ ```    
     var token = process.env.SLACK_TOKEN
-```
- with
-```   
+ ```
+    with
+ ```   
     var token = your slack token
-```
- **Do not upload your token to a public repository.** In Windows you could also set the token as an environmental variable with the command:
-```
+ ```
+  **Do not upload your token to a public repository.** In Windows you could also set the token as an environmental variable with the command:
+ ```
     set SLACK_TOKEN=<YOUR_SLACK_TOKEN>
-```    
+ ```    
     2. Run the chatbot with the command `node index.js`
+
+ *Mac OS X or Linux*
+ ```
+	SLACK_TOKEN=<YOUR_SLACK_TOKEN> npm start
+ ```    
 
 Things are looking good if the console prints something like:
 
@@ -63,6 +64,3 @@ This code uses the [botkit](https://github.com/howdyai/botkit) npm module by the
 ## License
 
 See the [LICENSE](LICENSE.md) file (MIT).
-
-
-
