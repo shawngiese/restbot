@@ -16,7 +16,7 @@ This code pulls images from bitmap charts. SVG and HTML5 charts need conversion 
 rptdesign files do not contain data, just the code necessary to build the report.
 rptdocument files contain finished reports with queried data, images and charts.  
   You can convert these files into other document formats like PDF and Excel.
-Due to the demonstrtive purposes of this code, error checking is minimimal.
+Due to the demonstrtive purposes of this code, error checking is minimal.
 Possible code evolution:
  * check if there is an existing log-in authentication before making a new one
  * enable user authentication
