@@ -7,7 +7,9 @@ var message
 
 /* NOTES
 Passwords are hard-coded for demonstration purposes. Don't send production passwords 
-  in the query string to unencrypted URLs.
+  in the query string to unencrypted URLs. You can also use this as a method to 
+  authenticate access, URLs such as the one used to run a report, will require a
+  valid username and password to generate the report. 
 Using Cheerio to scrape charts from report HTML, you might find it easier to 
   tell the server where to save images from reports. You can configure the server's 
   web.xml to save images to an accessible location.
@@ -16,12 +18,15 @@ This code pulls images from bitmap charts. SVG and HTML5 charts need conversion 
 rptdesign files do not contain data, just the code necessary to build the report.
 rptdocument files contain finished reports with queried data, images and charts.  
   You can convert these files into other document formats like PDF and Excel.
-Due to the demonstrtive purposes of this code, error checking is minimal.
+This code is for demonstration purposes, error checking is minimal.
+Simple pattern matching is used to trigger code, check that any new trigger text does not 
+  match patterns used by another listener.
 Possible code evolution:
  * check if there is an existing log-in authentication before making a new one
  * enable user authentication
  * consider points to send notifications from iHub server to Slack channel
  * support report parameters in conversation
+ * upload chart image into chat instead of relying on external view that will eventually become timeout
   
 */
 
@@ -104,9 +109,9 @@ controller.hears('help', ['direct_message', 'direct_mention'], function (bot, me
         '`open crosstabs` select a data file to open in Interactive Crosstabs.\n' +
         '`open studio` create a link to Analytic Studio.\n' +
         '`sales chart` generate chart of today\'s sales.\n' +
-        '`sales report` create link to today\'s sales report.\n' +
-        '`share pdf` generate and upload a PDF.\n' +
-        '`share spreadsheet` generate and upload an Excel file.\n' +
+        '`run report` create link to run today\'s sales report.\n' +
+        '`share pdf` generate and upload a PDF into chat.\n' +
+        '`share spreadsheet` generate and upload an Excel file into chat.\n' +
         '`show data` see available data files.\n' +
         '`show files` see files in your home folder.\n' +
         '`top sales` display today\'s top sales agents.\n' 
@@ -234,7 +239,7 @@ controller.hears(['top sales', 'top sales people'], ['direct_message', 'direct_m
 */
 
 controller.hears(['sales chart'], ['direct_message', 'direct_mention'], function (bot, message) {
-    var text = 'Here is your chart.'
+    var text = 'Here is your chart. Image is valid for 24 hours.'
     var imageURL
     var url = 'http://aviatioexample.actuate.com:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fflightdemo%2Fcharts.rptdocument&__bookmark=mypng&__format=html&userID=flightdemo&password=Demo1234'
     var url2 ='http://aviatioexample.actuate.com:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fflightdemo%2FInteractive%20Chart%20Filtering%20Details.rptdocument&__format=html&userID=flightdemo&password=Demo1234'
@@ -265,11 +270,11 @@ controller.hears(['sales chart'], ['direct_message', 'direct_mention'], function
 })
 
 //Generates a PDF from a report
-controller.hears(['sales report', 'open report'], ['direct_message', 'direct_mention'], function (bot, message) {
+controller.hears(['sales report', 'open report', 'run report'], ['direct_message', 'direct_mention'], function (bot, message) {
     var text = 'Here is your report.'
     var attachments = [{
         fallback: text,
-        pretext: 'Report generated for you',
+        pretext: 'The following link generates the report for you',
         title: 'Download the PDF.',
         title_link: 'http://aviatioexample.actuate.com:8700/iportal/executereport.do?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__executableName=%2FPublic%2FUnshipped%20Orders%201H2013.rptdesign%3B1&__requesttype=immediate&__format=pdf&__wait=True&userID=flightdemo&password=Demo1234',
         text: text,
