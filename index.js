@@ -108,8 +108,8 @@ controller.hears('help', ['direct_message', 'direct_mention'], function (bot, me
     var help = 'I can answer the following requests: \n' +
         '`open crosstabs` select a data file to open in Interactive Crosstabs.\n' +
         '`open studio` create a link to Analytic Studio.\n' +
-        '`sales chart` generate chart of today\'s sales.\n' +
         '`run report` create link to run today\'s sales report.\n' +
+        '`sales chart` generate chart of today\'s sales.\n' +
         '`share pdf` generate and upload a PDF into chat.\n' +
         '`share spreadsheet` generate and upload an Excel file into chat.\n' +
         '`show data` see available data files.\n' +
@@ -238,7 +238,7 @@ controller.hears(['top sales', 'top sales people'], ['direct_message', 'direct_m
 })
 */
 
-controller.hears(['sales chart'], ['direct_message', 'direct_mention'], function (bot, message) {
+controller.hears(['sales chart','chart'], ['direct_message', 'direct_mention'], function (bot, message) {
     var text = 'Here is your chart. Image is valid for 24 hours.'
     var imageURL
     var url = 'http://aviatioexample.actuate.com:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fflightdemo%2Fcharts.rptdocument&__bookmark=mypng&__format=html&userID=flightdemo&password=Demo1234'
@@ -271,11 +271,11 @@ controller.hears(['sales chart'], ['direct_message', 'direct_mention'], function
 
 //Generates a PDF from a report
 controller.hears(['sales report', 'open report', 'run report'], ['direct_message', 'direct_mention'], function (bot, message) {
-    var text = 'Here is your report.'
+    var text = 'Q1 Un-Shipped Orders.'
     var attachments = [{
         fallback: text,
-        pretext: 'The following link generates the report for you',
-        title: 'Download the PDF.',
+        pretext: 'The following link generates your report.',
+        title: 'Run report as PDF.',
         title_link: 'http://aviatioexample.actuate.com:8700/iportal/executereport.do?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__executableName=%2FPublic%2FUnshipped%20Orders%201H2013.rptdesign%3B1&__requesttype=immediate&__format=pdf&__wait=True&userID=flightdemo&password=Demo1234',
         text: text,
         color: '#7CD197'
