@@ -4,8 +4,18 @@ var cheerio = require('cheerio')
 
 var myauthtoken
 var message
+var urlREST = 'http://localhost:8000/api/v2/'
 
 /* NOTES
+v2 supports iHub 16
+Since there is no public server to run this, all methods that launch a web browser are disabled.
+This is because the bot is working with an iHub server that is not available to the Internet.
+v1 supports iHub 3.1
+
+Other sample node projects:
+* application that converts SMTP alerts to Slack messages
+* application that uses IDAPI and SOAP 
+
 Passwords are hard-coded for demonstration purposes. Don't send production passwords 
   in the query string to unencrypted URLs. You can also use this as a method to 
   authenticate access, URLs such as the one used to run a report, will require a
@@ -92,7 +102,7 @@ controller.hears('what is information hub', ['direct_message', 'direct_mention']
 })
 
 //Generates a URL to open Analytic Studio
-controller.hears(['open analytic studio', 'open studio'], ['direct_message', 'direct_mention'], function (bot, message) {
+/* controller.hears(['open analytic studio', 'open studio'], ['direct_message', 'direct_mention'], function (bot, message) {
     var text = 'Click <http://aviatioexample.actuate.com:8700/iportal/wr?userID=flightdemo&password=Demo1234|here> to open Analytic Studio in a web browser.'
         //Putting inside JSON to enable additional message formatting
     var attachments = [{
@@ -101,25 +111,27 @@ controller.hears(['open analytic studio', 'open studio'], ['direct_message', 'di
     bot.reply(message, {
         attachments: attachments
     })
-})
+}) */
 
 //list of commands
 controller.hears('help', ['direct_message', 'direct_mention'], function (bot, message) {
     var help = 'I can answer the following requests: \n' +
-        '`open crosstabs` select a data file to open in Interactive Crosstabs.\n' +
-        '`open studio` create a link to Analytic Studio.\n' +
-        '`run report` create link to run today\'s sales report.\n' +
+        '`job schedule` display scheduled job and their next start time.\n' +
+		'`job status` display job status and the completion time.\n' +
+		'`open crosstabs` DISABLED select a data file to open in Interactive Crosstabs.\n' +
+        '`open studio` DISABLED create a link to Analytic Studio.\n' +
+        '`run report` DISABLED create link to run today\'s sales report.\n' +
         '`sales chart` generate chart of today\'s sales.\n' +
         '`share pdf` generate and upload a PDF into chat.\n' +
         '`share spreadsheet` generate and upload an Excel file into chat.\n' +
         '`show data` see available data files.\n' +
         '`show files` see files in your home folder.\n' +
+		'`top customers` display today\'s top customers.\n' +
         '`top sales` display today\'s top sales agents.\n' 
         bot.reply(message, help)
 })
 
 controller.hears(['files', 'show files'], ['direct_message', 'direct_mention'], function (bot, message) {
-    //login("aviatioexample.actuate.com", "flightdemo", "Demo1234")
     login(function (myauthtoken) {
         listFileNames(myauthtoken, function (answer) {
             var help = 'These files are available:\n' + answer
@@ -128,9 +140,27 @@ controller.hears(['files', 'show files'], ['direct_message', 'direct_mention'], 
     })
 })
 
+controller.hears(['job schedule', 'jobs scheduled', 'job scheduled'], ['direct_message', 'direct_mention'], function (bot, message) {
+    login(function (myauthtoken) {
+        listJobsScheduled(myauthtoken, function (answer) {
+            var help = 'These jobs are scheduled for the following times:\n' + answer
+            bot.reply(message, help)
+        })
+    })
+})
+
+controller.hears(['job status', 'jobs status'], ['direct_message', 'direct_mention'], function (bot, message) {
+    login(function (myauthtoken) {
+        listJobsCompleted(myauthtoken, function (answer) {
+            var help = 'Here is the status of your scheduled reports:\n' + answer
+            bot.reply(message, help)
+        })
+    })
+})
+
+
 //Retrieves available data files
 controller.hears(['data', 'show data'], ['direct_message', 'direct_mention'], function (bot, message) {
-    //login("aviatioexample.actuate.com", "flightdemo", "Demo1234")
     login(function (myauthtoken) {
         listDataNames(myauthtoken, function (answer) {
             var help = 'These data files are available:\n' + answer
@@ -139,10 +169,11 @@ controller.hears(['data', 'show data'], ['direct_message', 'direct_mention'], fu
     })
 })
 
-//Retrieves XLSX file from an rptdocument file
+//Retrieves XLSX file from an rptdocument file and uploads it to Slack
+// https://api.slack.com/methods/files.upload
 controller.hears(['send spreadsheet', 'share spreadsheet'], ['direct_message', 'direct_mention'], function (bot, message) {
     login(function (myauthtoken) {
-        downloadFile(myauthtoken, '500723000100','xlsx', function (answer) {
+        downloadFile(myauthtoken, '444200000100','xlsx', function (answer) {
             var randomNum = Math.ceil(Math.random() * 9999)
             //fs.writeFile("file"+randomNum+".xlsx",answer)
             console.log('Sending response to Slack')
@@ -179,22 +210,21 @@ controller.hears(['send spreadsheet', 'share spreadsheet'], ['direct_message', '
         })
     })
 })
-//Retrieves PDF file from an rptdocument file
+//Retrieves PDF file from an rptdocument file and uploads it to Slack
 controller.hears(['send pdf', 'share pdf'], ['direct_message', 'direct_mention'], function (bot, message) {
     login(function (myauthtoken) {
-        downloadFile(myauthtoken, '500723000100', 'pdf', function (answer) {
+        downloadFile(myauthtoken, '444200000100', 'pdf', function (answer) {
             var randomNum = Math.ceil(Math.random() * 9999)
                 //fs.writeFile("file"+randomNum+".xlsx",answer)
             console.log('Sending response to Slack')
             var r = request.post('https://slack.com/api/files.upload', function (err, res, body) {
 
             })
-            //This can be modified until the request is fired on the next cycle of the event-loop
+            //This request can be modified until the request is fired on the next cycle of the event-loop
             var form = r.form()
             form.append('token', token)
             form.append('title', 'Sales data Q1')
             form.append('filename', 'file' + randomNum + '.pdf')
-                //form.append('file', fs.createReadStream("file.xlsx"))
             form.append('file', answer, {
                 filename: 'file.xlsx'
             })
@@ -206,7 +236,6 @@ controller.hears(['send pdf', 'share pdf'], ['direct_message', 'direct_mention']
 
 //retrieves data in JSON format from a bookmark in a rptdocument
 controller.hears(['top sales', 'top sales people'], ['direct_message', 'direct_mention'], function (bot, message) {
-    //login("aviatioexample.actuate.com", "flightdemo", "Demo1234")
     login(function (myauthtoken) {
         listTopSales(myauthtoken, function (answer) {
             var help = 'The top 5 sales people for today are:\n' + answer
@@ -215,40 +244,29 @@ controller.hears(['top sales', 'top sales people'], ['direct_message', 'direct_m
     })
 })
 
-//Displays a chart from a bookmark in a rptdocument
-
-/* controller.hears(['sales chart'], ['direct_message', 'direct_mention'], function (bot, message) {
-    var text = 'Here is your chart.'
-    var attachments = [{
-        fallback: text,
-        pretext: 'Chart generated for you',
-        title: '',
-        //image_url: 'https://core.opentext.com/pdfjs/web/viewer.html?shortLink=69f2882a6a81b20a4657bd30f27e79374cd89918533be113',
-        image_url: 'https://core.opentext.com/api/v1/s/69f2882a6a81b20a4657bd30f27e79374cd89918533be113/contents/?access_token=undefined',
-        title_link: '',
-        text: text,
-        color: '#7CD197'
-  }]
-
-    bot.reply(message, {
-        attachments: attachments
-    }, function (err, resp) {
-        console.log(err, resp)
+//retrieves data in JSON format from a resultset in a rptdocument
+controller.hears(['top customers', 'top customer'], ['direct_message', 'direct_mention'], function (bot, message) {
+    login(function (myauthtoken) {
+        listTopCustomers(myauthtoken, function (answer) {
+            var help = 'The top 5 customers for today are:\n' + answer
+            bot.reply(message, help)
+        })
     })
 })
-*/
 
+
+// This example downloads the chart image and then uploads it to Slack. The image is then stored in Slack.
 controller.hears(['sales chart','chart'], ['direct_message', 'direct_mention'], function (bot, message) {
     var text = 'Here is your chart. Image is valid for 24 hours.'
     var imageURL
     var url = 'http://aviatioexample.actuate.com:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fflightdemo%2Fcharts.rptdocument&__bookmark=mypng&__format=html&userID=flightdemo&password=Demo1234'
-    var url2 ='http://aviatioexample.actuate.com:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fflightdemo%2FInteractive%20Chart%20Filtering%20Details.rptdocument&__format=html&userID=flightdemo&password=Demo1234'
+    var url2 ='http://localhost:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fadministrator%2FInteractive%20Chart%20Filtering%20Details.rptdocument&__format=html&userID=Administrator&password=PASSWORD'
     request(url2, function (error, response, html) {
             if (!error && response.statusCode == 200) {
                 var $ = cheerio.load(html)
-                imageURL = $('img').attr('src')+'&userID=flightdemo&password=Demo1234'
+                imageURL = $('img').attr('src')+'&userID=Administrator&password=PASSWORD'
                 console.log(imageURL)
-                var attachments = [{
+                 /* var attachments = [{
                     fallback: text,
                     pretext: 'Chart generated for you',
                     title: '',
@@ -257,12 +275,30 @@ controller.hears(['sales chart','chart'], ['direct_message', 'direct_mention'], 
                     text: text,
                     color: '#7CD197'
                 }]
-
                 bot.reply(message, {
                     attachments: attachments
                 }, function (err, resp) {
                     console.log(err, resp)
-                })
+                }) */
+				
+				downloadImage(imageURL, function (answer) {
+					var randomNum = Math.ceil(Math.random() * 9999)
+					console.log('Sending image to Slack')
+					var r = request.post('https://slack.com/api/files.upload', function (err, res, body) {
+
+					})
+					//This request can be modified until the request is fired on the next cycle of the event-loop
+					var form = r.form()
+					form.append('token', token)
+					form.append('title', 'Sales chart')
+					form.append('filename', 'file' + randomNum + '.png')
+					form.append('file', answer, {
+						filename: 'file.xlsx'
+					})
+					form.append('channels', message.channel)
+				})
+				
+
             } else {
                 bot.reply(message, 'Sorry, the server is not available.')
             }
@@ -270,7 +306,7 @@ controller.hears(['sales chart','chart'], ['direct_message', 'direct_mention'], 
 })
 
 //Generates a PDF from a report
-controller.hears(['sales report', 'open report', 'run report'], ['direct_message', 'direct_mention'], function (bot, message) {
+/* controller.hears(['sales report', 'open report', 'run report'], ['direct_message', 'direct_mention'], function (bot, message) {
     var text = 'Q1 Un-Shipped Orders.'
     var attachments = [{
         fallback: text,
@@ -286,10 +322,10 @@ controller.hears(['sales report', 'open report', 'run report'], ['direct_message
     }, function (err, resp) {
         console.log(err, resp)
     })
-})
+}) */
 
 //Starts conversation to select data to open in crosstab
-controller.hears(['open crosstab', 'crosstab', 'make crosstab'], ['direct_message', 'direct_mention'], function (bot, message) {
+/*controller.hears(['open crosstab', 'crosstab', 'make crosstab'], ['direct_message', 'direct_mention'], function (bot, message) {
     var fileChoices = []
     
     askData = function (response, convo) {
@@ -330,7 +366,7 @@ controller.hears(['open crosstab', 'crosstab', 'make crosstab'], ['direct_messag
         }
     }
     bot.startConversation(message, askData)
-})
+}) */
 
 controller.hears('.*', ['direct_message', 'direct_mention'], function (bot, message) {
     bot.reply(message, 'Sorry <@' + message.user + '>, I don\'t understand. \n')
@@ -346,13 +382,13 @@ function login(callback) {
 
     // Configure the request
     var options = {
-        url: 'http://restapitest.actuate.com:5000/ihub/v1/login',
+        url: urlREST + 'login',
         method: 'POST',
         headers: headers,
         json: true,
         form: {
-            'username': 'flightdemo',
-            'password': 'Demo1234'
+            'username': 'Administrator',
+            'password': 'PASSWORD'
         }
     }
 
@@ -360,8 +396,8 @@ function login(callback) {
     request(options, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             // Print out the response body
-            myauthtoken = body.AuthId
-                //console.log(token)
+            myauthtoken = body.authToken
+                console.log(body)
             return callback(myauthtoken)
         }
     })
@@ -371,18 +407,18 @@ function countFiles(myauthtoken) {
     // Set the headers
     //var request = '';
     var headers = {
-        'User-Agent': 'bottalk/0.0.1'
+        'User-Agent': 'bottalk/0.0.1',
+		'AuthToken': myauthtoken
     }
 
     // Configure the request
     var options = {
-        url: 'http://restapitest.actuate.com:5000/ihub/v1/files',
+        url: urlREST + 'files',
         method: 'GET',
         headers: headers,
         json: true,
         qs: {
-            'authId': myauthtoken,
-            'folderId': '40000000100'
+            'search': '/Home/administrator/*'
         }
     }
 
@@ -390,7 +426,7 @@ function countFiles(myauthtoken) {
     request(options, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             // Print out the response body
-            var count = body.TotalCount
+            var count = body.totalCount
             console.log(count)
         } else {
             console.log(error)
@@ -401,18 +437,18 @@ function countFiles(myauthtoken) {
 function listFileNames(myauthtoken, callback) {
     // Set the headers
     var headers = {
-        'User-Agent': 'bottalk/0.0.1'
+        'User-Agent': 'bottalk/0.0.1',
+		'AuthToken': myauthtoken
     }
 
     // Configure the request
     var options = {
-        url: 'http://restapitest.actuate.com:5000/ihub/v1/files',
+        url: urlREST + 'files',
         method: 'GET',
         headers: headers,
         json: true,
         qs: {
-            'authId': myauthtoken,
-            'folderId': '540000000100'
+            'search': '/Home/administrator/*.rptdesign,*rptdocument'
         }
     }
 
@@ -421,11 +457,12 @@ function listFileNames(myauthtoken, callback) {
         if (!error && response.statusCode == 200) {
             // Print out the JSON contents
             var answer = ''
-            for (var i = 0; i < body.ItemList.File.length; i++) {
-                var obj = body.ItemList.File[i]
-                answer += obj.Name + '\n'
-                console.log(obj.Name)
+            for (var i = 0; i < body.itemList.file.length; i++) {
+                var obj = body.itemList.file[i]
+                answer += obj.name + '\n'
+                console.log(obj.name)
             }
+			console.log(body)
             return callback(answer)
         } else {
             console.log(error)
@@ -437,17 +474,17 @@ function listFileNames(myauthtoken, callback) {
 function fileArray(myauthtoken, callback) {
     // Set the headers
     var headers = {
-        'User-Agent': 'bottalk/0.0.1'
+        'User-Agent': 'bottalk/0.0.1',
+		'AuthToken': myauthtoken
     }
 
     // Configure the request
     var options = {
-        url: 'http://restapitest.actuate.com:5000/ihub/v1/files',
+        url: urlREST + 'files',
         method: 'GET',
         headers: headers,
         json: true,
         qs: {
-            'authId': myauthtoken,
             'folderId': '740000000100'
         }
     }
@@ -467,18 +504,18 @@ function fileArray(myauthtoken, callback) {
 function listDataNames(myauthtoken, callback) {
     // Set the headers
     var headers = {
-        'User-Agent': 'bottalk/0.0.1'
+        'User-Agent': 'bottalk/0.0.1',
+		'AuthToken': myauthtoken
     }
 
     // Configure the request
     var options = {
-        url: 'http://restapitest.actuate.com:5000/ihub/v1/files',
+        url: urlREST + 'files',
         method: 'GET',
         headers: headers,
         json: true,
         qs: {
-            'authId': myauthtoken,
-            'folderId': '740000000100'
+            'search': '/Resources/Data Objects/*.data'
         }
     }
 
@@ -487,10 +524,10 @@ function listDataNames(myauthtoken, callback) {
         if (!error && response.statusCode == 200) {
             // Print out the JSON contents
             var answer = ''
-            for (var i = 0; i < body.ItemList.File.length; i++) {
-                var obj = body.ItemList.File[i]
-                answer += obj.Name + '\n'
-                console.log(obj.Name)
+            for (var i = 0; i < body.itemList.file.length; i++) {
+                var obj = body.itemList.file[i]
+                answer += obj.name + '\n'
+                console.log(obj.name)
             }
             return callback(answer)
         } else {
@@ -503,17 +540,17 @@ function listDataNames(myauthtoken, callback) {
 function listTopSales(myauthtoken, callback) {
     // Set the headers
     var headers = {
-        'User-Agent': 'bottalk/0.0.1'
+        'User-Agent': 'bottalk/0.0.1',
+		'AuthToken': myauthtoken
     }
 
     // Configure the request
     var options = {
-        url: 'http://restapitest.actuate.com:5000/ihub/v1/visuals/500723000100/bookmarks/table',
+        url: urlREST + 'visuals/444200000100/bookmarks/table',
         method: 'GET',
         headers: headers,
         json: true,
         qs: {
-            'authId': myauthtoken,
             'format': 'json'
         }
     }
@@ -536,21 +573,132 @@ function listTopSales(myauthtoken, callback) {
     })
 }
 
+
+function listTopCustomers(myauthtoken, callback) {
+    // Set the headers
+    var headers = {
+        'User-Agent': 'bottalk/0.0.1',
+		'AuthToken': myauthtoken
+    }
+
+    // Configure the request
+    var options = {
+        url: urlREST + 'visuals/444200000100/resultsets/TopCustomers_4',
+        method: 'GET',
+        headers: headers,
+        json: true,
+        qs: {
+            'format': 'json'
+        }
+    }
+
+    // Start the request
+    request(options, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            // Print out the JSON contents
+            var answer = ''
+            for (var i = 0; i < body.data.length; i++) {
+                var obj = body.data[i]
+                answer += obj.CUSTOMERNAME + '\n'
+                console.log(obj.CUSTOMERNAME)
+            }
+            return callback(answer)
+        } else {
+            console.log(error)
+        }
+
+    })
+}
+
+function listJobsScheduled(myauthtoken, callback) {
+    // Set the headers
+    var headers = {
+        'User-Agent': 'bottalk/0.0.1',
+		'AuthToken': myauthtoken
+    }
+
+    // Configure the request
+    var options = {
+        url: urlREST + 'jobs',
+        method: 'GET',
+        headers: headers,
+        json: true,
+        qs: {
+            'type': 'scheduled',
+			'fetchDirection' : 'true'
+        }
+    }
+
+    // Start the request
+    request(options, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            // Print out the JSON contents
+            var answer = ''
+            for (var i = 0; i < body.jobs.length; i++) {
+                var obj = body.jobs[i]
+                answer += obj.jobName + ': ' + obj.nextStartTime + '\n'
+                console.log(obj.jobName)
+            }
+            return callback(answer)
+        } else {
+            console.log(error)
+        }
+
+    })
+}
+
+function listJobsCompleted(myauthtoken, callback) {
+    // Set the headers
+    var headers = {
+        'User-Agent': 'bottalk/0.0.1',
+		'AuthToken': myauthtoken
+    }
+
+    // Configure the request
+    var options = {
+        url: urlREST + 'jobs',
+        method: 'GET',
+        headers: headers,
+        json: true,
+        qs: {
+            'type': 'completed',
+			'fetchDirection' : 'true'
+        }
+    }
+
+    // Start the request
+    request(options, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            // Print out the JSON contents
+            var answer = ''
+            for (var i = 0; i < body.jobs.length; i++) {
+                var obj = body.jobs[i]
+                answer += obj.jobName + ': ' + obj.state + ' ' + obj.completionTime + '\n'
+                console.log(obj.jobName)
+            }
+            return callback(answer)
+        } else {
+            console.log(error)
+        }
+
+    })
+}
+
 function downloadFile(myauthtoken, fileid, format, callback) {
     // Set the headers
     var headers = {
-        'User-Agent': 'bottalk/0.0.1'
+        'User-Agent': 'bottalk/0.0.1',
+		'AuthToken': myauthtoken
     }
 
     // Configure the request, encoding set to null to capture the return file in raw format
     var options = {
-        url: 'http://restapitest.actuate.com:5000/ihub/v1/visuals/'+fileid+'/'+format,
+        url: urlREST + 'visuals/'+fileid+'/'+format,
         method: 'GET',
         headers: headers,
         encoding: null,
         json: true,
         qs: {
-            'authId': myauthtoken,
             'format': 'json'
         }
     }
@@ -568,6 +716,35 @@ function downloadFile(myauthtoken, fileid, format, callback) {
     })
 }
 
+function downloadImage(urlImage, callback) {
+    // Set the headers
+    var headers = {
+        'User-Agent': 'bottalk/0.0.1',
+    }
+
+    // Configure the request, encoding set to null to capture the return file in raw format
+    var options = {
+        url: urlImage,
+        method: 'GET',
+        headers: headers,
+        encoding: null,
+        json: false,
+    }
+
+    // Start the request
+    request(options, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            // Print out the JSON contents
+            console.log('iHub image received')
+            return callback(body)
+        } else {
+            console.log(error)
+        }
+
+    })
+}
+
+
 //not used right now
 function upFile(file) {
     // Set the headers
@@ -583,7 +760,6 @@ function upFile(file) {
         encoding: null,
         json: true,
         qs: {
-            'authId': myauthtoken,
             'format': 'json'
         }
     }
