@@ -11,6 +11,9 @@ v2 supports iHub 16
 Since there is no public server to run this, all methods that launch a web browser are disabled.
 This is because the bot is working with an iHub server that is not available to the Internet.
 v1 supports iHub 3.1
+Changes:
+* icons for files using custom emoji
+* chart image uploaded directly to Slack (if the image is PNG)
 
 Other sample node projects:
 * application that converts SMTP alerts to Slack messages
@@ -31,13 +34,15 @@ rptdocument files contain finished reports with queried data, images and charts.
 This code is for demonstration purposes, error checking is minimal.
 Simple pattern matching is used to trigger code, check that any new trigger text does not 
   match patterns used by another listener.
+  
 Possible code evolution:
  * check if there is an existing log-in authentication before making a new one
  * enable user authentication
  * consider points to send notifications from iHub server to Slack channel
  * support report parameters in conversation
  * upload chart image into chat instead of relying on external view that will eventually become timeout
-  
+ * Get report info - select report then show title, description, type, version, timestamp, owner
+ * combine in SOAP requests
 */
 
 var token = process.env.SLACK_TOKEN
@@ -116,25 +121,25 @@ controller.hears('what is information hub', ['direct_message', 'direct_mention']
 //list of commands
 controller.hears('help', ['direct_message', 'direct_mention'], function (bot, message) {
     var help = 'I can answer the following requests: \n' +
-        '`job schedule` display scheduled job and their next start time.\n' +
+        '`job schedule` display scheduled jobs and their next start time.\n' +
 		'`job status` display job status and the completion time.\n' +
 		'`open crosstabs` DISABLED select a data file to open in Interactive Crosstabs.\n' +
         '`open studio` DISABLED create a link to Analytic Studio.\n' +
         '`run report` DISABLED create link to run today\'s sales report.\n' +
-        '`sales chart` generate chart of today\'s sales.\n' +
+        '`sales chart` generate and upload chart of today\'s sales.\n' +
         '`share pdf` generate and upload a PDF into chat.\n' +
         '`share spreadsheet` generate and upload an Excel file into chat.\n' +
         '`show data` see available data files.\n' +
-        '`show files` see files in your home folder.\n' +
+        '`show reports` see files in your home folder.\n' +
 		'`top customers` display today\'s top customers.\n' +
         '`top sales` display today\'s top sales agents.\n' 
         bot.reply(message, help)
 })
 
-controller.hears(['files', 'show files'], ['direct_message', 'direct_mention'], function (bot, message) {
+controller.hears(['reports', 'show reports'], ['direct_message', 'direct_mention'], function (bot, message) {
     login(function (myauthtoken) {
         listFileNames(myauthtoken, function (answer) {
-            var help = 'These files are available:\n' + answer
+            var help = 'These reports are available:\n' + answer
             bot.reply(message, help)
         })
     })
@@ -152,7 +157,7 @@ controller.hears(['job schedule', 'jobs scheduled', 'job scheduled'], ['direct_m
 controller.hears(['job status', 'jobs status'], ['direct_message', 'direct_mention'], function (bot, message) {
     login(function (myauthtoken) {
         listJobsCompleted(myauthtoken, function (answer) {
-            var help = 'Here is the status of your scheduled reports:\n' + answer
+            var help = 'Here is the status of your recent reports:\n' + answer
             bot.reply(message, help)
         })
     })
@@ -459,8 +464,14 @@ function listFileNames(myauthtoken, callback) {
             var answer = ''
             for (var i = 0; i < body.itemList.file.length; i++) {
                 var obj = body.itemList.file[i]
-                answer += obj.name + '\n'
-                console.log(obj.name)
+				if (obj.fileType == 'RPTDESIGN') {
+					answer += ':rdes: ' + obj.name.replace(/.rptdesign/i,'')  + ' v' + obj.version + '\n └ from ' + obj.timeStamp.substring(4) + '\n'
+					//console.log(obj.name)
+					}
+				if (obj.fileType == 'RPTDOCUMENT') {
+					answer += ':rdoc: ' + obj.name.replace(/.rptdocument/i,'') + ' v' + obj.version + '\n └ from ' + obj.timeStamp.substring(4) + '\n'
+					//console.log(obj.name)
+					}	
             }
 			console.log(body)
             return callback(answer)
@@ -526,8 +537,14 @@ function listDataNames(myauthtoken, callback) {
             var answer = ''
             for (var i = 0; i < body.itemList.file.length; i++) {
                 var obj = body.itemList.file[i]
-                answer += obj.name + '\n'
-                console.log(obj.name)
+                if (obj.fileType == 'DATA') {
+					answer += ':data: ' + obj.name.replace(/.data/i,'') + '\n'
+					//console.log(obj.name)
+					}
+				if (obj.fileType == 'DATADESIGN') {
+					answer += ':datades: ' + obj.name.replace(/.datadesign/i,'') + '\n'
+					//console.log(obj.name)
+					}	
             }
             return callback(answer)
         } else {
@@ -634,10 +651,10 @@ function listJobsScheduled(myauthtoken, callback) {
         if (!error && response.statusCode == 200) {
             // Print out the JSON contents
             var answer = ''
-            for (var i = 0; i < body.jobs.length; i++) {
+            for (var i = 0; i < body.jobs.length; i++) {		
                 var obj = body.jobs[i]
-                answer += obj.jobName + ': ' + obj.nextStartTime + '\n'
-                console.log(obj.jobName)
+                answer += ':sched: ' + obj.jobName + '\n   └» ' + obj.nextStartTime.substring(4) + '\n'
+                //console.log(obj.jobName)
             }
             return callback(answer)
         } else {
@@ -673,7 +690,14 @@ function listJobsCompleted(myauthtoken, callback) {
             var answer = ''
             for (var i = 0; i < body.jobs.length; i++) {
                 var obj = body.jobs[i]
-                answer += obj.jobName + ': ' + obj.state + ' ' + obj.completionTime + '\n'
+				if (obj.state == 'Succeeded') {
+					answer += ':pass: ' + obj.jobName + '\n   └─ ' + obj.completionTime.substring(4) + '\n'
+					//console.log(obj.name)
+					}
+				if (obj.state == 'Failed') {
+					answer += ':fail: ' + obj.jobName + '\n   └─ ' + obj.completionTime.substring(4) + '\n'
+					//console.log(obj.name)
+					}	
                 console.log(obj.jobName)
             }
             return callback(answer)
