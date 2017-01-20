@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.4.0.v20150206-1039 Build &lt;4.2.3.v20150206-1039></property>
+    <text-property name="title">Interactive Chart Filtering Details</text-property>
+    <html-property name="description">This report shows how a chart can leverage JSAPI and Interactive Viewer to filter the details of the table below.&#13;
+&#13;
+The functionality is put into the Chart itself, which uses client side JavaScript to leverage JSAPI and apply a filter to the table in the report.  The logic is placed under the Intearctivity options of the Values Series and Title sections within the Format Chart dialog.</html-property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="layoutPreference">auto layout</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <data-sources>
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="Data Source" id="7">
+            <property name="odaDriverClass">org.eclipse.birt.report.data.oda.sampledb.Driver</property>
+            <property name="odaURL">jdbc:classicmodels:sampledb</property>
+            <property name="odaUser">ClassicModels</property>
+            <property name="OdaConnProfileName"></property>
+        </oda-data-source>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="Data Set" id="8">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">CUSTOMERNUMBER</property>
+                    <property name="alias">Customer #</property>
+                </structure>
+                <structure>
+                    <property name="columnName">CUSTOMERNAME</property>
+                    <property name="alias">Name</property>
+                </structure>
+                <structure>
+                    <property name="columnName">COUNTRY</property>
+                    <property name="alias">Country</property>
+                </structure>
+                <structure>
+                    <property name="columnName">ORDERNUMBER</property>
+                    <property name="alias">Order #</property>
+                </structure>
+                <structure>
+                    <property name="columnName">ORDERDATE</property>
+                    <property name="alias">Order Date</property>
+                </structure>
+                <structure>
+                    <property name="columnName">ORDERTOTAL</property>
+                    <property name="alias">Order Total</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">Customer #</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">Name</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">Country</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">Order #</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">Order Date</property>
+                        <property name="dataType">date</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">Order Total</property>
+                        <property name="dataType">float</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">Data Source</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">CUSTOMERNUMBER</property>
+                    <property name="nativeName">CUSTOMERNUMBER</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">CUSTOMERNAME</property>
+                    <property name="nativeName">CUSTOMERNAME</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">COUNTRY</property>
+                    <property name="nativeName">COUNTRY</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">ORDERNUMBER</property>
+                    <property name="nativeName">ORDERNUMBER</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">ORDERDATE</property>
+                    <property name="nativeName">ORDERDATE</property>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">ORDERTOTAL</property>
+                    <property name="nativeName">ORDERTOTAL</property>
+                    <property name="dataType">float</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select C.CUSTOMERNUMBER,  C.CUSTOMERNAME, C.COUNTRY, O.ORDERNUMBER, O.ORDERDATE, SUM(QUANTITYORDERED * PRICEEACH) AS ORDERTOTAL
+from CUSTOMERS C, ORDERS O, ORDERDETAILS OD
+WHERE C.CUSTOMERNUMBER = O.CUSTOMERNUMBER
+AND O.ORDERNUMBER = OD.ORDERNUMBER
+GROUP BY C.CUSTOMERNUMBER, C.CUSTOMERNAME, C.COUNTRY, O.ORDERNUMBER, O.ORDERDATE]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <styles>
+        <style name="report" id="4">
+            <property name="fontFamily">"Verdana"</property>
+            <property name="fontSize">10pt</property>
+        </style>
+        <style name="crosstab-cell" id="5">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+        <style name="crosstab" id="6">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <property name="topMargin">0.25in</property>
+            <property name="leftMargin">0.25in</property>
+            <property name="bottomMargin">0.25in</property>
+            <property name="rightMargin">0.25in</property>
+            <page-footer>
+                <text id="3">
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                </text>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <grid id="96">
+            <property name="marginBottom">10pt</property>
+            <property name="width">8in</property>
+            <column id="97"/>
+            <row id="98">
+                <cell id="99">
+                    <property name="textAlign">center</property>
+                    <label id="55">
+                        <property name="fontSize">8pt</property>
+                        <property name="color">#C0C0C0</property>
+                        <property name="marginBottom">0pt</property>
+                        <text-property name="text">Click a bar in the chart to filter table detail data.  Click on chart title to remove table filter.</text-property>
+                    </label>
+                </cell>
+            </row>
+        </grid>
+        <extended-item extensionName="Chart" name="My Chart" id="14">
+            <xml-property name="xmlRepresentation"><![CDATA[<ActuateChart version="2.6.1">
+ <ChartWithAxes version="2.6.1" type="Bar Chart" subType="Side-by-side" units="Points" unitSpacing="25.0">
+  <description value="">
+   <font>
+    <alignment/>
+   </font>
+  </description>
+  <block>
+   <children _type="TitleBlock">
+    <outline>
+     <color _nil="1"/>
+    </outline>
+    <triggers condition="2">
+     <action type="3">
+      <value _type="ScriptValue" script="// &quot;Invoke Script&quot; of a BIRT chart contains the following variables:&#13;&#10;// evt - browser event object&#13;&#10; &#13;&#10;// Get a handle on the Actuate JSAPI Viewer for this chart&#13;&#10;// browsers implement the event object differently&#13;&#10;// evt.srcElement is for IE, evt.target is for all other browsers&#13;&#10;// getTable() takes the name of a BIRT bookmarkvar &#13;&#10;&#13;&#10;viewer = actuate.getViewer(evt.srcElement || evt.target);&#13;&#10;&#13;&#10;var table = viewer.getTable(&quot;myTable&quot;);&#13;&#10; &#13;&#10; // clear table filters for Country column&#13;&#10; &#13;&#10;table.clearFilters(&quot;Country&quot;);&#13;&#10;table.submit();"/>
+     </action>
+    </triggers>
+    <label>
+     <caption value="Order Totals by Country (000s)">
+      <font size="16.0" bold="true">
+       <alignment _body="1,"/>
+      </font>
+     </caption>
+     <background _nil="1"/>
+     <outline>
+      <color _nil="1"/>
+     </outline>
+    </label>
+   </children>
+   <children _type="Plot" horizontalSpacing="0" verticalSpacing="0">
+    <outline>
+     <color _nil="1"/>
+    </outline>
+    <clientArea>
+     <outline>
+      <color _nil="1"/>
+     </outline>
+     <shadowColor _body=",0,255,255,255"/>
+    </clientArea>
+   </children>
+   <children _type="Legend" visible="false">
+    <outline>
+     <color _nil="1"/>
+    </outline>
+    <cursor type="0"/>
+    <clientArea>
+     <outline>
+      <color _nil="1"/>
+     </outline>
+    </clientArea>
+    <text value=""/>
+    <separator>
+     <color _nil="1"/>
+    </separator>
+    <title>
+     <caption value=""/>
+     <background _nil="1"/>
+     <outline>
+      <color _nil="1"/>
+     </outline>
+    </title>
+   </children>
+   <bounds _body=",,576.75,277.5"/>
+   <outline>
+    <color _nil="1"/>
+   </outline>
+   <background _body=",0,255,255,255"/>
+   <cursor type="0"/>
+  </block>
+  <extendedProperties name="enable.area.alt" value="false"/>
+  <extendedProperties name="enable.drill.category" value="true"/>
+  <extendedProperties name="enable.drill.series" value="true"/>
+  <extendedProperties name="keep.hierarchy.category" value="false"/>
+  <extendedProperties name="keep.hierarchy.series" value="false"/>
+  <extendedProperties name="jschart.series.shadow" value="true"/>
+  <sampleData>
+   <baseSampleData dataSetRepresentation="A, B, C"/>
+   <orthogonalSampleData dataSetRepresentation="5,4,12"/>
+  </sampleData>
+  <emptyMessage>
+   <caption value="">
+    <font>
+     <alignment _body=",0"/>
+    </font>
+   </caption>
+   <background _body=",0,255,255,255"/>
+   <outline visible="false">
+    <color _body=",255,0,0,0"/>
+   </outline>
+   <insets _body="0.0,2.0,0.0,3.0"/>
+  </emptyMessage>
+  <axes>
+   <title>
+    <caption value="X-Axis Title">
+     <font size="14.0" bold="true">
+      <alignment _body="1,"/>
+     </font>
+    </caption>
+    <background _nil="1"/>
+    <outline>
+     <color _nil="1"/>
+    </outline>
+   </title>
+   <associatedAxes>
+    <title>
+     <caption value="Y-Axis Title">
+      <font size="14.0" bold="true" rotation="90.0">
+       <alignment _body="1,"/>
+      </font>
+     </caption>
+     <background _nil="1"/>
+     <outline>
+      <color _nil="1"/>
+     </outline>
+    </title>
+    <seriesDefinitions>
+     <query definition=""/>
+     <seriesPalette>
+      <entries _type="Gradient" direction="-90.0">
+       <startColor _body=",255,80,166,218"/>
+       <endColor _body=",255,108,222,228"/>
+      </entries>
+      <entries _body=",255,242,88,106"/>
+      <entries _body=",255,232,172,57"/>
+      <entries _body=",255,128,255,128"/>
+      <entries _body=",255,64,128,128"/>
+      <entries _body=",255,128,128,192"/>
+      <entries _body=",255,170,85,85"/>
+      <entries _body=",255,128,128,0"/>
+      <entries _body=",255,192,192,192"/>
+      <entries _body=",255,255,255,128"/>
+      <entries _body=",255,128,192,128"/>
+      <entries _body=",255,7,146,94"/>
+      <entries _body=",255,0,128,255"/>
+      <entries _body=",255,255,128,192"/>
+      <entries _body=",255,0,255,255"/>
+      <entries _body=",255,255,128,128"/>
+      <entries _body=",255,0,128,192"/>
+      <entries _body=",255,128,128,192"/>
+      <entries _body=",255,255,0,255"/>
+      <entries _body=",255,128,64,64"/>
+      <entries _body=",255,255,128,64"/>
+      <entries _body=",255,80,240,120"/>
+      <entries _body=",255,0,64,128"/>
+      <entries _body=",255,128,0,64"/>
+      <entries _body=",255,255,0,128"/>
+      <entries _body=",255,128,128,64"/>
+      <entries _body=",255,128,128,128"/>
+      <entries _body=",255,255,128,255"/>
+      <entries _body=",255,0,64,0"/>
+      <entries _body=",255,0,0,0"/>
+      <entries _body=",255,255,255,255"/>
+      <entries _body=",255,255,128,0"/>
+     </seriesPalette>
+     <series _type="BarSeries" seriesIdentifier="normal">
+      <label>
+       <caption value=""/>
+       <background _nil="1"/>
+       <outline>
+        <color _nil="1"/>
+       </outline>
+      </label>
+      <dataDefinition definition="row[&quot;Order Total&quot;]">
+       <grouping/>
+      </dataDefinition>
+      <dataPoint separator=", ">
+       <components type="1"/>
+      </dataPoint>
+      <triggers condition="2">
+       <action type="3">
+        <value _type="ScriptValue" script="// &quot;Invoke Script&quot; of a BIRT chart contains the following variables:&#13;&#10;// evt - browser event object&#13;&#10;// categoryData - value of the Category that was clicked&#13;&#10;// valueData - numeric value of the item clicked in the chart&#13;&#10;// valueSeriesName - name of the series that was clicked&#13;&#10; &#13;&#10;// Get a handle on the Actuate JSAPI Viewer for this chart&#13;&#10;// browsers implement the event object differently&#13;&#10;// evt.srcElement is for IE, evt.target is for all other browsers&#13;&#10;// getTable() takes the name of a BIRT bookmark&#13;&#10;&#13;&#10;var viewer = actuate.getViewer(evt.srcElement || evt.target);&#13;&#10;&#13;&#10;var table = viewer.getTable(&quot;myTable&quot;);&#13;&#10; &#13;&#10;// create a new Filter object and apply it to the table&#039;s Country column&#13;&#10; &#13;&#10;table.setFilters(new actuate.data.Filter(&quot;Country&quot;, &quot;eq&quot;, categoryData));&#13;&#10;table.submit();"/>
+       </action>
+      </triggers>
+      <curveFitting _nil="1"/>
+      <riserOutline _body=",255,192,192,192"/>
+     </series>
+    </seriesDefinitions>
+    <lineAttributes>
+     <color _nil="1"/>
+    </lineAttributes>
+    <label>
+     <caption value=""/>
+     <background _nil="1"/>
+     <outline>
+      <color _nil="1"/>
+     </outline>
+    </label>
+    <formatSpecifier _type="NumberFormatSpecifier" prefix="$" suffix="" multiplier="0.001" fractionDigits="0"/>
+    <markerLines>
+     <lineAttributes style="0">
+      <color _body=",255,0,0,0"/>
+     </lineAttributes>
+     <label visible="false">
+      <caption>
+       <font>
+        <alignment/>
+       </font>
+      </caption>
+      <outline/>
+      <insets/>
+     </label>
+     <cursor type="0"/>
+    </markerLines>
+    <majorGrid tickStyle="0">
+     <lineAttributes>
+      <color _nil="1"/>
+     </lineAttributes>
+     <tickAttributes>
+      <color _nil="1"/>
+     </tickAttributes>
+    </majorGrid>
+    <minorGrid>
+     <lineAttributes>
+      <color _nil="1"/>
+     </lineAttributes>
+     <tickAttributes>
+      <color _nil="1"/>
+     </tickAttributes>
+    </minorGrid>
+    <origin>
+     <value _nil="1"/>
+    </origin>
+    <cursor type="0"/>
+   </associatedAxes>
+   <seriesDefinitions sorting="0">
+    <query definition=""/>
+    <seriesPalette>
+     <entries _type="Gradient" direction="-90.0">
+      <startColor _body=",255,80,166,218"/>
+      <endColor _body=",255,108,222,228"/>
+     </entries>
+     <entries _body=",255,242,88,106"/>
+     <entries _body=",255,232,172,57"/>
+     <entries _body=",255,128,255,128"/>
+     <entries _body=",255,64,128,128"/>
+     <entries _body=",255,128,128,192"/>
+     <entries _body=",255,170,85,85"/>
+     <entries _body=",255,128,128,0"/>
+     <entries _body=",255,192,192,192"/>
+     <entries _body=",255,255,255,128"/>
+     <entries _body=",255,128,192,128"/>
+     <entries _body=",255,7,146,94"/>
+     <entries _body=",255,0,128,255"/>
+     <entries _body=",255,255,128,192"/>
+     <entries _body=",255,0,255,255"/>
+     <entries _body=",255,255,128,128"/>
+     <entries _body=",255,0,128,192"/>
+     <entries _body=",255,128,128,192"/>
+     <entries _body=",255,255,0,255"/>
+     <entries _body=",255,128,64,64"/>
+     <entries _body=",255,255,128,64"/>
+     <entries _body=",255,80,240,120"/>
+     <entries _body=",255,0,64,128"/>
+     <entries _body=",255,128,0,64"/>
+     <entries _body=",255,255,0,128"/>
+     <entries _body=",255,128,128,64"/>
+     <entries _body=",255,128,128,128"/>
+     <entries _body=",255,255,128,255"/>
+     <entries _body=",255,0,64,0"/>
+     <entries _body=",255,0,0,0"/>
+     <entries _body=",255,255,255,255"/>
+     <entries _body=",255,255,128,0"/>
+    </seriesPalette>
+    <series seriesIdentifier="">
+     <label>
+      <caption value=""/>
+      <background _nil="1"/>
+      <outline>
+       <color _nil="1"/>
+      </outline>
+     </label>
+     <dataDefinition definition="row[&quot;Country&quot;]"/>
+     <dataPoint separator=", ">
+      <components type="1"/>
+     </dataPoint>
+     <curveFitting _nil="1"/>
+    </series>
+    <grouping enabled="true"/>
+    <sortKey definition="row[&quot;Country&quot;]"/>
+   </seriesDefinitions>
+   <lineAttributes visible="false">
+    <color _nil="1"/>
+   </lineAttributes>
+   <label>
+    <caption value="">
+     <font rotation="45.0"/>
+    </caption>
+    <background _nil="1"/>
+    <outline>
+     <color _nil="1"/>
+    </outline>
+   </label>
+   <majorGrid tickStyle="3">
+    <lineAttributes>
+     <color _nil="1"/>
+    </lineAttributes>
+    <tickAttributes>
+     <color _nil="1"/>
+    </tickAttributes>
+   </majorGrid>
+   <minorGrid>
+    <lineAttributes>
+     <color _nil="1"/>
+    </lineAttributes>
+    <tickAttributes>
+     <color _nil="1"/>
+    </tickAttributes>
+   </minorGrid>
+   <origin>
+    <value _nil="1"/>
+   </origin>
+   <cursor type="0"/>
+  </axes>
+  <rotation>
+   <angles/>
+  </rotation>
+ </ChartWithAxes>
+</ActuateChart>
+]]></xml-property>
+            <property name="outputFormat">PNG</property>
+            <property name="inheritColumns">true</property>
+            <property name="height">3.75in</property>
+            <property name="width">8in</property>
+            <property name="dataSet">Data Set</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">Customer #</property>
+                    <expression name="expression">dataSetRow["Customer #"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">Name</property>
+                    <expression name="expression">dataSetRow["Name"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Country</property>
+                    <expression name="expression">dataSetRow["Country"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Order #</property>
+                    <expression name="expression">dataSetRow["Order #"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">Order Date</property>
+                    <expression name="expression">dataSetRow["Order Date"]</expression>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="name">Order Total</property>
+                    <expression name="expression">dataSetRow["Order Total"]</expression>
+                    <property name="dataType">float</property>
+                </structure>
+            </list-property>
+        </extended-item>
+        <table id="56">
+            <property name="width">8in</property>
+            <property name="dataSet">Data Set</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">Customer #</property>
+                    <text-property name="displayName">Customer #</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["Customer #"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">Name</property>
+                    <text-property name="displayName">Name</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["Name"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Country</property>
+                    <text-property name="displayName">Country</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["Country"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Order #</property>
+                    <text-property name="displayName">Order #</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["Order #"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">Order Date</property>
+                    <text-property name="displayName">Order Date</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["Order Date"]</expression>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="name">Order Total</property>
+                    <text-property name="displayName">Order Total</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["Order Total"]</expression>
+                    <property name="dataType">float</property>
+                </structure>
+            </list-property>
+            <expression name="bookmark" type="javascript">"myTable"</expression>
+            <column id="90"/>
+            <column id="91"/>
+            <column id="92"/>
+            <column id="93"/>
+            <column id="94"/>
+            <column id="95"/>
+            <header>
+                <row id="57">
+                    <cell id="58">
+                        <property name="textAlign">left</property>
+                        <label id="59">
+                            <text-property name="text">Customer #</text-property>
+                        </label>
+                    </cell>
+                    <cell id="60">
+                        <property name="textAlign">left</property>
+                        <label id="61">
+                            <text-property name="text">Name</text-property>
+                        </label>
+                    </cell>
+                    <cell id="62">
+                        <property name="textAlign">left</property>
+                        <label id="63">
+                            <text-property name="text">Country</text-property>
+                        </label>
+                    </cell>
+                    <cell id="64">
+                        <property name="textAlign">left</property>
+                        <label id="65">
+                            <text-property name="text">Order #</text-property>
+                        </label>
+                    </cell>
+                    <cell id="66">
+                        <property name="textAlign">left</property>
+                        <label id="67">
+                            <text-property name="text">Order Date</text-property>
+                        </label>
+                    </cell>
+                    <cell id="68">
+                        <property name="textAlign">right</property>
+                        <label id="69">
+                            <text-property name="text">Order Total</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="70">
+                    <cell id="71">
+                        <property name="textAlign">left</property>
+                        <data id="72">
+                            <property name="resultSetColumn">Customer #</property>
+                        </data>
+                    </cell>
+                    <cell id="73">
+                        <property name="textAlign">left</property>
+                        <data id="74">
+                            <property name="resultSetColumn">Name</property>
+                        </data>
+                    </cell>
+                    <cell id="75">
+                        <property name="textAlign">left</property>
+                        <data id="76">
+                            <property name="resultSetColumn">Country</property>
+                        </data>
+                    </cell>
+                    <cell id="77">
+                        <property name="textAlign">left</property>
+                        <data id="78">
+                            <property name="resultSetColumn">Order #</property>
+                        </data>
+                    </cell>
+                    <cell id="79">
+                        <property name="textAlign">left</property>
+                        <data id="80">
+                            <property name="resultSetColumn">Order Date</property>
+                        </data>
+                    </cell>
+                    <cell id="81">
+                        <property name="textAlign">right</property>
+                        <data id="82">
+                            <structure name="numberFormat">
+                                <property name="category">Currency</property>
+                                <property name="pattern">$ #,##0.00{RoundingMode=HALF_UP}</property>
+                            </structure>
+                            <property name="resultSetColumn">Order Total</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="83">
+                    <cell id="84">
+                        <property name="textAlign">left</property>
+                    </cell>
+                    <cell id="85">
+                        <property name="textAlign">left</property>
+                    </cell>
+                    <cell id="86">
+                        <property name="textAlign">left</property>
+                    </cell>
+                    <cell id="87">
+                        <property name="textAlign">left</property>
+                    </cell>
+                    <cell id="88">
+                        <property name="textAlign">left</property>
+                    </cell>
+                    <cell id="89">
+                        <property name="textAlign">right</property>
+                    </cell>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

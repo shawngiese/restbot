@@ -10,6 +10,21 @@ Node.js based Slack bot using botkit. This bot is hosted with [Beep Boop](https:
 
 ## Usage
 
+### Resources
+The resources folder contains sample reports that are used in the by the bot. Also, if you are using Slack, you might want to make custom emojis for the file types. You can find the iHub icons in your installation of iHub C:\OpenText\InformationHub\modules\BIRTiHub\iHub\web\birtservice\iportal\activePortal\images. 
+
+This bot refers to them with the following emoji names:
+:rdes:
+:rdoc:
+:pdf:
+:xls:
+:xlsx:
+:data:
+:datades:
+:pass:
+:fail:
+:sched:
+
 ### Run locally
 Running the chatbot locally, from your laptop, is very useful for debugging. All of the console output will appear in the terminal you are using to run node. This is also useful if you have resources you want your chatbot to use that are not publically available on the Internet.
 
