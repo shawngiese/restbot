@@ -10,6 +10,7 @@ var urlREST = 'http://localhost:8000/api/v2/'
 v2 supports iHub 16
 Since there is no public server to run this, all methods that launch a web browser are disabled.
 This is because the bot is working with an iHub server that is not available to the Internet.
+
 v1 supports iHub 3.1
 Changes:
 * icons for files using custom emoji
@@ -121,9 +122,10 @@ controller.hears('what is information hub', ['direct_message', 'direct_mention']
 //list of commands
 controller.hears('help', ['direct_message', 'direct_mention'], function (bot, message) {
     var help = 'I can answer the following requests: \n' +
+		'`get report info` display file details for a report.\n' +
         '`job schedule` display scheduled jobs and their next start time.\n' +
-		'`job status` display job status and the completion time.\n' +
-		'`open crosstabs` DISABLED select a data file to open in Interactive Crosstabs.\n' +
+        '`job status` display job status and the completion time.\n' +
+        '`open crosstabs` DISABLED select a data file to open in Interactive Crosstabs.\n' +
         '`open studio` DISABLED create a link to Analytic Studio.\n' +
         '`run report` DISABLED create link to run today\'s sales report.\n' +
         '`sales chart` generate and upload chart of today\'s sales.\n' +
@@ -131,9 +133,9 @@ controller.hears('help', ['direct_message', 'direct_mention'], function (bot, me
         '`share spreadsheet` generate and upload an Excel file into chat.\n' +
         '`show data` see available data files.\n' +
         '`show reports` see files in your home folder.\n' +
-		'`top customers` display today\'s top customers.\n' +
-        '`top sales` display today\'s top sales agents.\n' 
-        bot.reply(message, help)
+        '`top customers` display today\'s top customers.\n' +
+        '`top sales` display today\'s top sales agents.\n'
+    bot.reply(message, help)
 })
 
 controller.hears(['reports', 'show reports'], ['direct_message', 'direct_mention'], function (bot, message) {
@@ -177,26 +179,26 @@ controller.hears(['data', 'show data'], ['direct_message', 'direct_mention'], fu
 //Retrieves XLSX file from an rptdocument file and uploads it to Slack
 // https://api.slack.com/methods/files.upload
 controller.hears(['send spreadsheet', 'share spreadsheet'], ['direct_message', 'direct_mention'], function (bot, message) {
-    login(function (myauthtoken) {
-        downloadFile(myauthtoken, '444200000100','xlsx', function (answer) {
-            var randomNum = Math.ceil(Math.random() * 9999)
-            //fs.writeFile("file"+randomNum+".xlsx",answer)
-            console.log('Sending response to Slack')
-                 var r = request.post('https://slack.com/api/files.upload', function (err, res, body) {
+        login(function (myauthtoken) {
+            downloadFile(myauthtoken, '444200000100', 'xlsx', function (answer) {
+                var randomNum = Math.ceil(Math.random() * 9999)
+                    //fs.writeFile("file"+randomNum+".xlsx",answer)
+                console.log('Sending response to Slack')
+                var r = request.post('https://slack.com/api/files.upload', function (err, res, body) {
 
                 })
-                  
-                    var form = r.form()
-                    form.append('token', token)
-                    form.append('title', 'Sales data Q1')
-                    form.append('filename', 'file'+randomNum+'.xlsx')
+
+                var form = r.form()
+                form.append('token', token)
+                form.append('title', 'Sales data Q1')
+                form.append('filename', 'file' + randomNum + '.xlsx')
                     //form.append('file', fs.createReadStream("file.xlsx"))
-                    form.append('file', answer,{
-                            filename: 'file.xlsx'
-                        })
-                    form.append('channels', message.channel)
-             //Difficulty with botkit api so make a file upload using normal POST... above
-             /*           
+                form.append('file', answer, {
+                    filename: 'file.xlsx'
+                })
+                form.append('channels', message.channel)
+                    //Difficulty with botkit api so make a file upload using normal POST... above
+                    /*           
              bot.api.files.upload({
                     //file: fs.createReadStream("file.xlsx"),
                     file: answer,{
@@ -212,10 +214,10 @@ controller.hears(['send spreadsheet', 'share spreadsheet'], ['direct_message', '
                     }
                 })
             */
+            })
         })
     })
-})
-//Retrieves PDF file from an rptdocument file and uploads it to Slack
+    //Retrieves PDF file from an rptdocument file and uploads it to Slack
 controller.hears(['send pdf', 'share pdf'], ['direct_message', 'direct_mention'], function (bot, message) {
     login(function (myauthtoken) {
         downloadFile(myauthtoken, '444200000100', 'pdf', function (answer) {
@@ -224,8 +226,8 @@ controller.hears(['send pdf', 'share pdf'], ['direct_message', 'direct_mention']
             console.log('Sending response to Slack')
             var r = request.post('https://slack.com/api/files.upload', function (err, res, body) {
 
-            })
-            //This request can be modified until the request is fired on the next cycle of the event-loop
+                })
+                //This request can be modified until the request is fired on the next cycle of the event-loop
             var form = r.form()
             form.append('token', token)
             form.append('title', 'Sales data Q1')
@@ -261,17 +263,17 @@ controller.hears(['top customers', 'top customer'], ['direct_message', 'direct_m
 
 
 // This example downloads the chart image and then uploads it to Slack. The image is then stored in Slack.
-controller.hears(['sales chart','chart'], ['direct_message', 'direct_mention'], function (bot, message) {
+controller.hears(['sales chart', 'chart'], ['direct_message', 'direct_mention'], function (bot, message) {
     var text = 'Here is your chart. Image is valid for 24 hours.'
     var imageURL
     var url = 'http://aviatioexample.actuate.com:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fflightdemo%2Fcharts.rptdocument&__bookmark=mypng&__format=html&userID=flightdemo&password=Demo1234'
-    var url2 ='http://localhost:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fadministrator%2FInteractive%20Chart%20Filtering%20Details.rptdocument&__format=html&userID=Administrator&password=PASSWORD'
+    var url2 = 'http://localhost:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fadministrator%2FInteractive%20Chart%20Filtering%20Details.rptdocument&__format=html&userID=Administrator&password=PASSWORD'
     request(url2, function (error, response, html) {
-            if (!error && response.statusCode == 200) {
-                var $ = cheerio.load(html)
-                imageURL = $('img').attr('src')+'&userID=Administrator&password=PASSWORD'
-                console.log(imageURL)
-                 /* var attachments = [{
+        if (!error && response.statusCode == 200) {
+            var $ = cheerio.load(html)
+            imageURL = $('img').attr('src') + '&userID=Administrator&password=PASSWORD'
+            console.log(imageURL)
+                /* var attachments = [{
                     fallback: text,
                     pretext: 'Chart generated for you',
                     title: '',
@@ -285,29 +287,100 @@ controller.hears(['sales chart','chart'], ['direct_message', 'direct_mention'], 
                 }, function (err, resp) {
                     console.log(err, resp)
                 }) */
-				
-				downloadImage(imageURL, function (answer) {
-					var randomNum = Math.ceil(Math.random() * 9999)
-					console.log('Sending image to Slack')
-					var r = request.post('https://slack.com/api/files.upload', function (err, res, body) {
 
-					})
-					//This request can be modified until the request is fired on the next cycle of the event-loop
-					var form = r.form()
-					form.append('token', token)
-					form.append('title', 'Sales chart')
-					form.append('filename', 'file' + randomNum + '.png')
-					form.append('file', answer, {
-						filename: 'file.xlsx'
-					})
-					form.append('channels', message.channel)
-				})
-				
+            downloadImage(imageURL, function (answer) {
+                var randomNum = Math.ceil(Math.random() * 9999)
+                console.log('Sending image to Slack')
+                var r = request.post('https://slack.com/api/files.upload', function (err, res, body) {
 
-            } else {
-                bot.reply(message, 'Sorry, the server is not available.')
-            }
+                    })
+                    //This request can be modified until the request is fired on the next cycle of the event-loop
+                var form = r.form()
+                form.append('token', token)
+                form.append('title', 'Sales chart')
+                form.append('filename', 'file' + randomNum + '.png')
+                form.append('file', answer, {
+                    filename: 'file.xlsx'
+                })
+                form.append('channels', message.channel)
+            })
+
+
+        } else {
+            bot.reply(message, 'Sorry, the server is not available.')
+        }
+    })
+})
+
+//code to display file information by request
+controller.hears(['get report info', 'get info', 'report info'], ['direct_message', 'direct_mention'], function (bot, message) {
+    var fileChoices = []
+
+    askData = function (response, convo) {
+        login(function (myauthtoken) {
+            fileArray(myauthtoken, function (answer) {
+                var fileList = ''
+                for (var i = 0; i < answer.itemList.file.length; i++) {
+                    var obj = answer.itemList.file[i]
+                    fileChoices[i + 1] = obj.name
+                    fileList += (i + 1) + ') ' + obj.name + '\n'
+                }
+                console.log(answer)
+                var help = 'These reports are available:\n' + fileList + '\nWhich file do you want to see additional information about?'
+                convo.ask(help, function (response, convo) {
+                    showFileInfo(response, answer, convo)
+                    convo.next()
+                })
+            })
         })
+    }
+
+    showFileInfo = function (response, answer, convo) {
+        var choice = (parseInt(response.text))
+        console.log(choice)
+        if (choice <= answer.itemList.file.length && choice > 0) {
+            var attachments = [{
+                fallback: answer.itemList.file[choice - 1].name + " details",
+                pretext: "Report file details",
+                title: answer.itemList.file[choice - 1].name,
+                text: answer.itemList.file[choice - 1].description,
+                "fields": [
+                    {
+                        "title": "Version",
+                        "value": answer.itemList.file[choice - 1].version,
+                        "short": true
+            },
+                    {
+                        "title": "Type",
+                        "value": answer.itemList.file[choice - 1].fileType.toLowerCase(),
+                        "short": true
+            },
+                    {
+                        "title": "Timestamp",
+                        "value": answer.itemList.file[choice - 1].timeStamp,
+                        "short": true
+            },
+                    {
+                        "title": "Owner",
+                        "value": answer.itemList.file[choice - 1].owner,
+                        "short": true
+            }
+         ]
+                }]
+            bot.reply(message, {
+                attachments: attachments
+            }, function (err, resp) {
+                console.log(err, resp)
+            })
+            convo.next()
+                //console.log(convo.status)
+        } else {
+            convo.say('That was not a valid selection. Please start get info again.')
+            convo.next()
+            console.log('conversation stopped')
+        }
+    }
+    bot.startConversation(message, askData)
 })
 
 //Generates a PDF from a report
@@ -377,7 +450,7 @@ controller.hears('.*', ['direct_message', 'direct_mention'], function (bot, mess
     bot.reply(message, 'Sorry <@' + message.user + '>, I don\'t understand. \n')
 })
 
-    
+
 function login(callback) {
     // Set the headers
     var headers = {
@@ -402,7 +475,7 @@ function login(callback) {
         if (!error && response.statusCode == 200) {
             // Print out the response body
             myauthtoken = body.authToken
-                console.log(body)
+            console.log(body)
             return callback(myauthtoken)
         }
     })
@@ -413,7 +486,7 @@ function countFiles(myauthtoken) {
     //var request = '';
     var headers = {
         'User-Agent': 'bottalk/0.0.1',
-		'AuthToken': myauthtoken
+        'AuthToken': myauthtoken
     }
 
     // Configure the request
@@ -443,7 +516,7 @@ function listFileNames(myauthtoken, callback) {
     // Set the headers
     var headers = {
         'User-Agent': 'bottalk/0.0.1',
-		'AuthToken': myauthtoken
+        'AuthToken': myauthtoken
     }
 
     // Configure the request
@@ -453,7 +526,7 @@ function listFileNames(myauthtoken, callback) {
         headers: headers,
         json: true,
         qs: {
-            'search': '/Home/administrator/*.rptdesign,*rptdocument'
+            'search': '/Home/administrator/*.rptdesign,*.rptdocument'
         }
     }
 
@@ -464,16 +537,16 @@ function listFileNames(myauthtoken, callback) {
             var answer = ''
             for (var i = 0; i < body.itemList.file.length; i++) {
                 var obj = body.itemList.file[i]
-				if (obj.fileType == 'RPTDESIGN') {
-					answer += ':rdes: ' + obj.name.replace(/.rptdesign/i,'')  + ' v' + obj.version + '\n └ from ' + obj.timeStamp.substring(4) + '\n'
-					//console.log(obj.name)
-					}
-				if (obj.fileType == 'RPTDOCUMENT') {
-					answer += ':rdoc: ' + obj.name.replace(/.rptdocument/i,'') + ' v' + obj.version + '\n └ from ' + obj.timeStamp.substring(4) + '\n'
-					//console.log(obj.name)
-					}	
+                if (obj.fileType == 'RPTDESIGN') {
+                    answer += ':rdes: ' + obj.name.replace(/.rptdesign/i, '') + ' v' + obj.version + '\n └ from ' + obj.timeStamp.substring(4) + '\n'
+                        //console.log(obj.name)
+                }
+                if (obj.fileType == 'RPTDOCUMENT') {
+                    answer += ':rdoc: ' + obj.name.replace(/.rptdocument/i, '') + ' v' + obj.version + '\n └ from ' + obj.timeStamp.substring(4) + '\n'
+                        //console.log(obj.name)
+                }
             }
-			console.log(body)
+            console.log(body)
             return callback(answer)
         } else {
             console.log(error)
@@ -486,7 +559,7 @@ function fileArray(myauthtoken, callback) {
     // Set the headers
     var headers = {
         'User-Agent': 'bottalk/0.0.1',
-		'AuthToken': myauthtoken
+        'AuthToken': myauthtoken
     }
 
     // Configure the request
@@ -496,11 +569,11 @@ function fileArray(myauthtoken, callback) {
         headers: headers,
         json: true,
         qs: {
-            'folderId': '740000000100'
+            'search': '/Home/administrator/*.rptdesign,*.rptdocument'
         }
     }
 
-    // Start the request
+    // Start the request and send back the JSON response
     request(options, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             // Print out the JSON contents
@@ -516,7 +589,7 @@ function listDataNames(myauthtoken, callback) {
     // Set the headers
     var headers = {
         'User-Agent': 'bottalk/0.0.1',
-		'AuthToken': myauthtoken
+        'AuthToken': myauthtoken
     }
 
     // Configure the request
@@ -538,13 +611,13 @@ function listDataNames(myauthtoken, callback) {
             for (var i = 0; i < body.itemList.file.length; i++) {
                 var obj = body.itemList.file[i]
                 if (obj.fileType == 'DATA') {
-					answer += ':data: ' + obj.name.replace(/.data/i,'') + '\n'
-					//console.log(obj.name)
-					}
-				if (obj.fileType == 'DATADESIGN') {
-					answer += ':datades: ' + obj.name.replace(/.datadesign/i,'') + '\n'
-					//console.log(obj.name)
-					}	
+                    answer += ':data: ' + obj.name.replace(/.data/i, '') + '\n'
+                        //console.log(obj.name)
+                }
+                if (obj.fileType == 'DATADESIGN') {
+                    answer += ':datades: ' + obj.name.replace(/.datadesign/i, '') + '\n'
+                        //console.log(obj.name)
+                }
             }
             return callback(answer)
         } else {
@@ -558,7 +631,7 @@ function listTopSales(myauthtoken, callback) {
     // Set the headers
     var headers = {
         'User-Agent': 'bottalk/0.0.1',
-		'AuthToken': myauthtoken
+        'AuthToken': myauthtoken
     }
 
     // Configure the request
@@ -595,7 +668,7 @@ function listTopCustomers(myauthtoken, callback) {
     // Set the headers
     var headers = {
         'User-Agent': 'bottalk/0.0.1',
-		'AuthToken': myauthtoken
+        'AuthToken': myauthtoken
     }
 
     // Configure the request
@@ -631,7 +704,7 @@ function listJobsScheduled(myauthtoken, callback) {
     // Set the headers
     var headers = {
         'User-Agent': 'bottalk/0.0.1',
-		'AuthToken': myauthtoken
+        'AuthToken': myauthtoken
     }
 
     // Configure the request
@@ -642,7 +715,7 @@ function listJobsScheduled(myauthtoken, callback) {
         json: true,
         qs: {
             'type': 'scheduled',
-			'fetchDirection' : 'true'
+            'fetchDirection': 'true'
         }
     }
 
@@ -651,10 +724,10 @@ function listJobsScheduled(myauthtoken, callback) {
         if (!error && response.statusCode == 200) {
             // Print out the JSON contents
             var answer = ''
-            for (var i = 0; i < body.jobs.length; i++) {		
+            for (var i = 0; i < body.jobs.length; i++) {
                 var obj = body.jobs[i]
                 answer += ':sched: ' + obj.jobName + '\n   └» ' + obj.nextStartTime.substring(4) + '\n'
-                //console.log(obj.jobName)
+                    //console.log(obj.jobName)
             }
             return callback(answer)
         } else {
@@ -668,7 +741,7 @@ function listJobsCompleted(myauthtoken, callback) {
     // Set the headers
     var headers = {
         'User-Agent': 'bottalk/0.0.1',
-		'AuthToken': myauthtoken
+        'AuthToken': myauthtoken
     }
 
     // Configure the request
@@ -679,7 +752,7 @@ function listJobsCompleted(myauthtoken, callback) {
         json: true,
         qs: {
             'type': 'completed',
-			'fetchDirection' : 'true'
+            'fetchDirection': 'true'
         }
     }
 
@@ -690,14 +763,14 @@ function listJobsCompleted(myauthtoken, callback) {
             var answer = ''
             for (var i = 0; i < body.jobs.length; i++) {
                 var obj = body.jobs[i]
-				if (obj.state == 'Succeeded') {
-					answer += ':pass: ' + obj.jobName + '\n   └─ ' + obj.completionTime.substring(4) + '\n'
-					//console.log(obj.name)
-					}
-				if (obj.state == 'Failed') {
-					answer += ':fail: ' + obj.jobName + '\n   └─ ' + obj.completionTime.substring(4) + '\n'
-					//console.log(obj.name)
-					}	
+                if (obj.state == 'Succeeded') {
+                    answer += ':pass: ' + obj.jobName + '\n   └─ ' + obj.completionTime.substring(4) + '\n'
+                        //console.log(obj.name)
+                }
+                if (obj.state == 'Failed') {
+                    answer += ':fail: ' + obj.jobName + '\n   └─ ' + obj.completionTime.substring(4) + '\n'
+                        //console.log(obj.name)
+                }
                 console.log(obj.jobName)
             }
             return callback(answer)
@@ -712,12 +785,12 @@ function downloadFile(myauthtoken, fileid, format, callback) {
     // Set the headers
     var headers = {
         'User-Agent': 'bottalk/0.0.1',
-		'AuthToken': myauthtoken
+        'AuthToken': myauthtoken
     }
 
     // Configure the request, encoding set to null to capture the return file in raw format
     var options = {
-        url: urlREST + 'visuals/'+fileid+'/'+format,
+        url: urlREST + 'visuals/' + fileid + '/' + format,
         method: 'GET',
         headers: headers,
         encoding: null,
