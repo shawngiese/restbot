@@ -1,12 +1,16 @@
 # restbot
 
 ## Overview
-Node.js based Slack bot using botkit. This bot is hosted with [Beep Boop](https://beepboophq.com/docs/article/overview) to get the scoop on the the Beep Boop hosting platform. The Slack API documentation can be found [here](https://api.slack.com/).
+Node.js based Slack bot using the botkit frameworks. This bot can be hosted with [Beep Boop](https://beepboophq.com/docs/article/overview) hosting platform or can be run from behind your firewall where it will connect to a private server and the Slack server. The Slack API documentation can be found [here](https://api.slack.com/). The code is working ONLY with the latest Information Hub server. If you want to see the code for the previous release check the releases of this repository.
 
 ## Assumptions
+This is a prototype. It is not using SSL for connections, it is not using OAUTH, and it defaults to an administrators account for everyone. 
+
+A few additional assumptions:
 * If you are deploying this with the Docker service from Beep Boop, you need a [Beep Boop](https://beepboophq.com) account and a GitHub fork of this project. Otherwise you can run this script locally.
 * If running this code locally (useful for debug) install node.js on your computer.
 * You have a Slack team account with sufficient rights to add a bot and generate a Slack API token.
+* You have an Information Hub server installed and the username/password in this code matches an account on your server.
 
 ## Usage
 
