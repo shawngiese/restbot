@@ -159,7 +159,7 @@ controller.hears(['job schedule', 'jobs scheduled', 'job scheduled'], ['direct_m
 controller.hears(['job status', 'jobs status'], ['direct_message', 'direct_mention'], function (bot, message) {
     login(function (myauthtoken) {
         listJobsCompleted(myauthtoken, function (answer) {
-            var help = 'Here is the status of your recent reports:\n' + answer
+            var help = 'Here is the status of your last 10 reports:\n' + answer
             bot.reply(message, help)
         })
     })
@@ -752,7 +752,8 @@ function listJobsCompleted(myauthtoken, callback) {
         json: true,
         qs: {
             'type': 'completed',
-            'fetchDirection': 'true'
+			'fetchSize': '10',
+            'fetchDirection': 'false'
         }
     }
 
