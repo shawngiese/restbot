@@ -42,7 +42,7 @@ Possible code evolution:
  * consider points to send notifications from iHub server to Slack channel
  * support report parameters in conversation
  * upload chart image into chat instead of relying on external view that will eventually become timeout
- * Get report info - select report then show title, description, type, version, timestamp, owner
+ * Get report info - select report then show title, description, type, version, timestamp, owner, permissions
  * combine in SOAP requests
 */
 
@@ -122,7 +122,6 @@ controller.hears('what is information hub', ['direct_message', 'direct_mention']
 //list of commands
 controller.hears('help', ['direct_message', 'direct_mention'], function (bot, message) {
     var help = 'I can answer the following requests: \n' +
-		'`get report info` display file details for a report.\n' +
         '`job schedule` display scheduled jobs and their next start time.\n' +
         '`job status` display job status and the completion time.\n' +
         '`open crosstabs` DISABLED select a data file to open in Interactive Crosstabs.\n' +
@@ -132,6 +131,7 @@ controller.hears('help', ['direct_message', 'direct_mention'], function (bot, me
         '`share pdf` generate and upload a PDF into chat.\n' +
         '`share spreadsheet` generate and upload an Excel file into chat.\n' +
         '`show data` see available data files.\n' +
+		'`show report info` display file details for a report.\n' +		
         '`show reports` see files in your home folder.\n' +
         '`top customers` display today\'s top customers.\n' +
         '`top sales` display today\'s top sales agents.\n'
@@ -313,7 +313,7 @@ controller.hears(['sales chart', 'chart'], ['direct_message', 'direct_mention'],
 })
 
 //code to display file information by request
-controller.hears(['get report info', 'get info', 'report info'], ['direct_message', 'direct_mention'], function (bot, message) {
+controller.hears(['get report info', 'get info', 'report info', 'show report info'], ['direct_message', 'direct_mention'], function (bot, message) {
     var fileChoices = []
 
     askData = function (response, convo) {
