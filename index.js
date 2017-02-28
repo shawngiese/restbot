@@ -273,11 +273,11 @@ controller.hears(['sales chart', 'chart'], ['direct_message', 'direct_mention'],
     var text = 'Here is your chart. Image is valid for 24 hours.'
     var imageURL
     var url = 'http://aviatioexample.actuate.com:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fflightdemo%2Fcharts.rptdocument&__bookmark=mypng&__format=html&userID=flightdemo&password=Demo1234'
-    var url2 = 'http://localhost:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fadministrator%2FInteractive%20Chart%20Filtering%20Details.rptdocument&__format=html&userID=Administrator&password=PASSWORD'
+    var url2 = 'http://localhost:8700/iportal/iv?__locale=en_US&__vp=Default%20Volume&volume=Default%20Volume&closex=true&__report=%2FHome%2Fadministrator%2FInteractive%20Chart%20Filtering%20Details.rptdocument&__format=html&userID=Administrator'
     request(url2, function (error, response, html) {
         if (!error && response.statusCode == 200) {
             var $ = cheerio.load(html)
-            imageURL = $('img').attr('src') + '&userID=Administrator&password=PASSWORD'
+            imageURL = $('img').attr('src') + '&userID=Administrator'
             console.log(imageURL)
                 /* var attachments = [{
                     fallback: text,

@@ -11,7 +11,7 @@ A few additional assumptions:
 * If running this code locally (useful for debug) install node.js on your computer.
 * You have installed git on your computer (so NPM install will work).
 * You have a Slack team account with sufficient rights to add a bot and generate a Slack API token.
-* You have an Information Hub 16 server installed and the username/password in this code matches an account on your server. The default is username Administrator with no password.This is set in the login function.
+* You have an Information Hub 16 server installed and the username/password in this code matches an account on your server. The default is username Administrator with no password.This is set in the login function and in the URL to grab the sales chart.
 
 If you want to use this with an earlier version of Information Hub, check out the release of iHub REST v1 only. The earlier version uses a different authentication method and different endpoints than version 16.
 
