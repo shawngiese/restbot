@@ -18,7 +18,9 @@ If you want to use this with an earlier version of Information Hub, check out th
 ## Usage
 
 ### Resources
-The resources folder contains sample reports that are used in the by the bot. Also, if you are using Slack, you might want to make custom emojis for the file types. You can find the iHub icons in your installation of iHub C:\OpenText\InformationHub\modules\BIRTiHub\iHub\web\birtservice\iportal\activePortal\images. 
+The resources folder contains sample reports that are used in the by the bot. Copy these to Documents > Home > administrator.
+If you 
+Also, if you are using Slack, you might want to make custom emojis for the file types. You can find the iHub icons in your installation of iHub C:\OpenText\InformationHub\modules\BIRTiHub\iHub\web\birtservice\iportal\activePortal\images. 
 
 This bot refers to them with the following emoji names:
 :rdes:

@@ -150,7 +150,10 @@ controller.hears(['reports', 'show reports'], ['direct_message', 'direct_mention
 controller.hears(['job schedule', 'jobs scheduled', 'job scheduled'], ['direct_message', 'direct_mention'], function (bot, message) {
     login(function (myauthtoken) {
         listJobsScheduled(myauthtoken, function (answer) {
-            var help = 'These jobs are scheduled for the following times:\n' + answer
+			var help = "There are no scheduled jobs."
+			if (answer) { 
+            help = 'These jobs are scheduled for the following times:\n' + answer
+			}
             bot.reply(message, help)
         })
     })
