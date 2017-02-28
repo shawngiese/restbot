@@ -9,8 +9,11 @@ This is a prototype. It is not using SSL for connections, it is not using OAUTH,
 A few additional assumptions:
 * If you are deploying this with the Docker service from Beep Boop, you need a [Beep Boop](https://beepboophq.com) account and a GitHub fork of this project. Otherwise you can run this script locally.
 * If running this code locally (useful for debug) install node.js on your computer.
+* You have installed git on your computer (so NPM install will work).
 * You have a Slack team account with sufficient rights to add a bot and generate a Slack API token.
-* You have an Information Hub server installed and the username/password in this code matches an account on your server.
+* You have an Information Hub 16 server installed and the username/password in this code matches an account on your server. The default is username Administrator with no password.This is set in the login function.
+
+If you want to use this with an earlier version of Information Hub, check out the release of iHub REST v1 only. The earlier version uses a different authentication method and different endpoints than version 16.
 
 ## Usage
 
@@ -28,6 +31,8 @@ This bot refers to them with the following emoji names:
 :pass:
 :fail:
 :sched:
+
+![](/resources/emoji.png)
 
 ### Run locally
 Running the chatbot locally, from your laptop, is very useful for debugging. All of the console output will appear in the terminal you are using to run node. This is also useful if you have resources you want your chatbot to use that are not publically available on the Internet.
@@ -52,6 +57,7 @@ Running the chatbot locally, from your laptop, is very useful for debugging. All
 
  ```
     set SLACK_TOKEN=<YOUR_SLACK_TOKEN>
+	echo %SLACK_TOKEN%
  ```    
 5. Run the chatbot with the command `node index.js`
 
@@ -62,14 +68,24 @@ Running the chatbot locally, from your laptop, is very useful for debugging. All
 
 Things are looking good if the console prints something like:
 
-    info: ** No persistent storage method specified! Data may be lost when process s huts down.
-    info: ** Setting up custom handlers for processing Slack messages
-    Starting in single-team mode
-    info: ** API CALL: https://slack.com/api/rtm.start
-    notice: ** BOT ID: ihub3 ...attempting to connect to RTM!
-    notice: RTM websocket opened
-    Connected to Slack RTM
+	Initializing Botkit v0.5.1
+	info: ** No persistent storage method specified! Data may be lost when process shuts down.
+	info: ** Setting up custom handlers for processing Slack messages
+	Starting in single-team mode
+	info: ** API CALL: https://slack.com/api/rtm.start
+	notice: ** BOT ID: ihub16 ...attempting to connect to RTM!
+	notice: RTM websocket opened
+	Connected to Slack RTM
+	
+If you see something like:
+	Starting in Beep Boop multi-team mode
+	error: Invalid BEEPBOOP_RESOURCER environment variable...
 
+Then check some of the possible reasons that happened:
+
+* Your slack token is incorrect.
+* You tried to add the token to your system environment but it did not work. Use the echo command to check if the variable is correctly set.
+	
 ### Run in BeepBoop
 If you have linked your local repo with the Beep Boop service (check [here](https://beepboophq.com/0_o/my-projects)), changes pushed to the remote master branch will automatically deploy. After making a commit to your GitHub repository, Beep Bop is notified and it clones your GitHub repository. Then Beep Bop starts building a Docker instance with your bot inside. You can see the Docker build notifications [here](https://beepboophq.slack.com/messages). Check these notifications if your bot is not appearing in the beepboop interface because there might be a problem building the Docker instance.
 

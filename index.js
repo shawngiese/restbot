@@ -466,7 +466,7 @@ function login(callback) {
         json: true,
         form: {
             'username': 'Administrator',
-            'password': 'PASSWORD'
+            'password': ''
         }
     }
 

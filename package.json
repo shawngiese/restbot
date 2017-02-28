@@ -1,7 +1,7 @@
 {
   "name": "restbot",
   "version": "2.0.0",
-  "description": "A Beep Boop Node.js Slackbot for OpenText iHub servers",
+  "description": "A Slackbot for OpenText iHub servers using Node.js.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
