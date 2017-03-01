@@ -83,13 +83,15 @@ Things are looking good if the console prints something like:
 	notice: RTM websocket opened
 	Connected to Slack RTM
 	
-If you see something like:
+An error like the following will indicates a problem with your token:
+
 	Starting in Beep Boop multi-team mode
 	error: Invalid BEEPBOOP_RESOURCER environment variable...
 
-Then check some of the possible reasons that happened:
+Some of the possible reasons that happened:
 
 * Your slack token is incorrect.
+* You did not add your token.
 * You tried to add the token to your system environment but it did not work. Use the echo command to check if the variable is correctly set.
 	
 ### Run in BeepBoop
