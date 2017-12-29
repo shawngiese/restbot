@@ -186,7 +186,7 @@ controller.hears(['data', 'show data'], ['direct_message', 'direct_mention'], fu
 // https://api.slack.com/methods/files.upload
 controller.hears(['send spreadsheet', 'share spreadsheet'], ['direct_message', 'direct_mention'], function (bot, message) {
         login(function (myauthtoken) {
-            downloadFile(myauthtoken, '210100000100', 'xlsx', function (answer) {
+            downloadFile(myauthtoken, '10500000100', 'xlsx', function (answer) {
                 var randomNum = Math.ceil(Math.random() * 9999)
                     //fs.writeFile("file"+randomNum+".xlsx",answer)
                 console.log('Sending response to Slack')
@@ -226,7 +226,7 @@ controller.hears(['send spreadsheet', 'share spreadsheet'], ['direct_message', '
     //Retrieves PDF file from an rptdocument file and uploads it to Slack
 controller.hears(['send pdf', 'share pdf'], ['direct_message', 'direct_mention'], function (bot, message) {
     login(function (myauthtoken) {
-        downloadFile(myauthtoken, '210100000100', 'pdf', function (answer) {
+        downloadFile(myauthtoken, '10500000100', 'pdf', function (answer) {
             var randomNum = Math.ceil(Math.random() * 9999)
                 //fs.writeFile("file"+randomNum+".xlsx",answer)
             console.log('Sending response to Slack')
@@ -642,7 +642,7 @@ function listTopSales(myauthtoken, callback) {
 
     // Configure the request
     var options = {
-        url: urlREST + 'visuals/210100000100/bookmarks/table',
+        url: urlREST + 'visuals/10500000100/bookmarks/table',
         method: 'GET',
         headers: headers,
         json: true,
@@ -679,7 +679,7 @@ function listTopCustomers(myauthtoken, callback) {
 
     // Configure the request
     var options = {
-        url: urlREST + 'visuals/210100000100/resultsets/TopCustomers_4',
+        url: urlREST + 'visuals/10500000100/resultsets/TopCustomers_4',
         method: 'GET',
         headers: headers,
         json: true,
