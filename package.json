@@ -1,6 +1,6 @@
 {
   "name": "restbot",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A Slackbot for OpenText iHub servers using Node.js.",
   "main": "index.js",
   "scripts": {
@@ -23,8 +23,8 @@
   "homepage": "https://github.com/shawngiese/restbot#readme",
   "dependencies": {
     "beepboop-botkit": ">=1.4.1",
-    "botkit": ">=0.6.7",
-    "request": ">=2.81.0",
-    "cheerio": ">=0.22.0"
+    "botkit": "^0.6.11",
+    "cheerio": ">=0.22.0",
+    "request": ">=2.81.0"
   }
 }

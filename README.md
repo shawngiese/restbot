@@ -74,7 +74,7 @@ Running the chatbot locally, from your laptop, is very useful for debugging. All
 
 Things are looking good if the console prints something like:
 
-	Initializing Botkit v0.5.1
+	Initializing Botkit v0.6.11
 	info: ** No persistent storage method specified! Data may be lost when process shuts down.
 	info: ** Setting up custom handlers for processing Slack messages
 	Starting in single-team mode
@@ -93,6 +93,11 @@ Some of the possible reasons that happened:
 * Your slack token is incorrect.
 * You did not add your token.
 * You tried to add the token to your system environment but it did not work. Use the echo command to check if the variable is correctly set.
+* installing in windows might require the installation of additional build tools such as:
+
+npm --add-python-to-path='true' --debug install --global windows-build-tools
+
+or manually installing the latest Visual Studio build tools from Microsoft.
 	
 ### Run in BeepBoop
 If you have linked your local repo with the Beep Boop service (check [here](https://beepboophq.com/0_o/my-projects)), changes pushed to the remote master branch will automatically deploy. After making a commit to your GitHub repository, Beep Bop is notified and it clones your GitHub repository. Then Beep Bop starts building a Docker instance with your bot inside. You can see the Docker build notifications [here](https://beepboophq.slack.com/messages). Check these notifications if your bot is not appearing in the beepboop interface because there might be a problem building the Docker instance.
